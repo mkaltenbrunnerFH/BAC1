@@ -36,18 +36,15 @@ def search_prob(p):
           print("PrbReq, SSID = %s, Src = %s, Vendor = %s" %(p.info, p.addr2, req['result']['company']))
           probe_data.add(mac_and_ssid)
 	  
-	  r2 = requests.get(url2, {'ssid':p.info}, auth=('AID0c03e6a1fdff1332213ca04110bf6cb8', '6f7ae03341051392258941eda733365c'))
-          #print('test')
+	  r2 = requests.get(url2, {'ssid':p.info, 'country':'AT'}, auth=('AID0c03e6a1fdff1332213ca04110bf6cb8', '6f7ae03341051392258941eda733365c'))
+          
 	  json_object = {"key" : "value"}
 	  build_direction = "LEFT_TO_RIGHT"
           table_attributes = {"style" : "width:100%"}
           html = convert (r2.json(), build_direction=build_direction, table_attributes=table_attributes)
-	  #print(html)
-          #'<table style="width:100%"><tr><th>key</th><td>value</td></tr></table>'
-		
-          #print(r2.json())
-
+	  
           details = r2.json()
+	  print(detail)
 
           # EXTRACTING 'RESULTS' AS A PANDAS DATAFRAME TO WORK WITH:
           df = json_normalize(details['results'])
