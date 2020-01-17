@@ -5,6 +5,7 @@ import requests
 import json
 import sys
 
+# SOURCE: https://laptrinhx.com/building-a-wifi-spots-map-of-networks-around-you-with-wigle-and-python-2416726908/
 # IMPORTING REQUIRED LIBRARIES:
 import requests
 from requests.auth import HTTPBasicAuth
@@ -45,19 +46,23 @@ def search_prob(p):
 	  
           details = r2.json()
 	  print(detail)
-
+		
+	  # SOURCE: https://laptrinhx.com/building-a-wifi-spots-map-of-networks-around-you-with-wigle-and-python-2416726908/	
           # EXTRACTING 'RESULTS' AS A PANDAS DATAFRAME TO WORK WITH:
           df = json_normalize(details['results'])
-
+	
+	  # SOURCE: https://laptrinhx.com/building-a-wifi-spots-map-of-networks-around-you-with-wigle-and-python-2416726908/
           # RENAMING COLUMNS FOR GEOPLOTLIB:
           df = df.rename(columns={'trilat': 'lat', 'trilong': 'lon'})
           cols = list(df.columns) 
-       
+          
+	  # SOURCE: https://laptrinhx.com/building-a-wifi-spots-map-of-networks-around-you-with-wigle-and-python-2416726908/	
           # PREVIEWING AVAILABLE INFORMATION:
           print("Result obtained has {df.shape[0]} rows and {df.shape[1]} columns in it. \n\nThe list of columns include {cols}")
 
           print(df)
-
+	  
+	  # SOURCE: https://laptrinhx.com/building-a-wifi-spots-map-of-networks-around-you-with-wigle-and-python-2416726908/
           # GENERATING WIFI SPOTS MAP OF NETWORKS:
           gp.dot(df)
           gp.show()
