@@ -1,10 +1,10 @@
 import sys
 from queue import Queue
 from threading import RLock
-from project.map import *
-from project.datahandler import *
-from project.sniffer import *
-from project.wigle import *
+from mapwindow import *
+from datahandler import *
+from sniffer import *
+from wigle import *
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
