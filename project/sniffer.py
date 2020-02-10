@@ -1,18 +1,23 @@
 from scapy.all import *
 from threading import Thread, Event
 
-
+# src: https://www.pythoncentral.io/how-to-create-a-thread-in-python/
+# src: https://blog.skyplabs.net/2018/03/01/python-sniffing-inside-a-thread-with-scapy/
+# Use scapy in thread
 class Sniffer(Thread):
-    def __init__(self, queue, lock):
+    def __init__(self, iface, queue):
         super().__init__()
         self.daemon = True
+        self.iface = iface
         self.queue = queue
-        self.lock = lock
-        self.probe_data = set()
         self.stop_sniffer = Event()
 
     def run(self):
-        sniff(iface="wlan0mon", prn=self.search_probe, stop_filter=self.should_stop_sniffer)
+        while True:
+            try:
+                sniff(iface=self.iface, prn=self.search_probe, stop_filter=self.should_stop_sniffer)
+            except:
+                continue
 
     def join(self, timeout=None):
         self.stop_sniffer.set()
@@ -22,8 +27,10 @@ class Sniffer(Thread):
         return self.stop_sniffer.isSet()
 
     def search_probe(self, p):
-        if p.type == 0 and p.subtype == 4 and p.info != b'':
-            mac_and_ssid = (p.addr2, p.info)
-            if mac_and_ssid not in self.probe_data:
-                self.probe_data.add(mac_and_ssid)
-                self.queue.put(mac_and_ssid)
+        if p.type == 0:
+            if p.subtype == 4:
+                if p.info != b'':
+                    mac = p.addr2
+                    ssid = p.info
+                    power = p.dBm_AntSignal
+                    self.queue.put([mac, ssid, power])

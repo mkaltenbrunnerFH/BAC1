@@ -1,30 +1,42 @@
-from threading import Thread
+from PyQt5.QtCore import QThread
+from configparser import ConfigParser
 import requests
-from PyQt5.QtWidgets import QMessageBox
+import queue
 
 
-class Wigle(Thread):
-    def __init__(self, ssid, map):
+# src: https://www.youtube.com/watch?v=o81Q3oyz6rg
+class Wigle(QThread):
+    def __init__(self, queue, map_update, no_results):
         super().__init__()
-        self.ssid = ssid
-        self.map = map
+        self.daemon = True
+        self.queue = queue
+        self.map_update = map_update
+        self.no_results = no_results
+        # src: https://github.com/glennzw/WigleAPI/blob/master/wigle_api.py
+        Config = ConfigParser()
+        Config.read('wigle.conf')
+        try:
+            api_name = Config.get('wigle', 'user')
+            api_token = Config.get('wigle', 'key')
+            self.auth = (api_name, api_token)
+        except:
+            raise ValueError('Please enter your API key into the wigle.conf file. See https://api.wigle.net')
 
     def run(self):
-        r2 = requests.get('https://api.wigle.net/api/v2/network/search',
-                          {'ssid': self.ssid, 'country': 'AT'},
-                          auth=('AID0c03e6a1fdff1332213ca04110bf6cb8', '6f7ae03341051392258941eda733365c'))
-        req = r2.json()
-        entries = req['results']
-        if req['totalResults'] == 0:
-            msgBox = QMessageBox()
-            msgBox.setIcon(QMessageBox.Information)
-            msgBox.setWindowTitle("Warning")
-            msgBox.setText("No entry for SSID '%s' found in WiGLE database." % self.ssid)
-            return msgBox.exec()
-        else:
-            arr = req['results']
-            for entry in arr:
-                lat = entry['trilat']
-                lon = entry['trilong']
-                ssid = self.ssid
-                self.map.set_marker(lat, lon, ssid)
+        while True:
+            # src: https://eli.thegreenplace.net/2011/12/27/python-threads-communication-and-stopping/
+            try:
+                ssid = self.queue.get(True, 0.05)
+                # src: https://github.com/mgp25/Probe-Hunter/blob/master/wigle.py
+                # src: https://medium.com/@neuralnets/building-a-wifi-spots-map-of-networks-around-you-with-wigle-and-python-5adf72a48140
+                r = requests.get('https://api.wigle.net/api/v2/network/search', {'ssid': ssid}, auth=self.auth)
+
+                req = r.json()
+                if req['totalResults'] <= 0:
+                    self.no_results.emit(ssid)
+                else:
+                    resultCount = req['resultCount']
+                    entries = req['results']
+                    self.map_update.emit(ssid, resultCount, entries)
+            except queue.Empty:
+                continue
