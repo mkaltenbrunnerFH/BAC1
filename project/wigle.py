@@ -1,8 +1,10 @@
+#authors: Leonhard Jauch, Michael Kaltenbrunner, Tobias Pfeiffer
+#university of applied sciences Salzburg, ITS-B2017
+
 from PyQt5.QtCore import QThread
 from configparser import ConfigParser
 import requests
 import queue
-
 
 # src: https://www.youtube.com/watch?v=o81Q3oyz6rg
 class Wigle(QThread):
