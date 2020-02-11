@@ -1,3 +1,6 @@
+#authors: Leonhard Jauch, Michael Kaltenbrunner, Tobias Pfeiffer
+#university of applied sciences Salzburg, ITS-B2017
+
 import sys
 import os
 from queue import Queue
