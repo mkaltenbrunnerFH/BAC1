@@ -1,3 +1,6 @@
+#authors: Leonhard Jauch, Michael Kaltenbrunner, Tobias Pfeiffer
+#university of applied sciences Salzburg, ITS-B2017
+
 from PyQt5.QtCore import QThread
 import requests
 import json
