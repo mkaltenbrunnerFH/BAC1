@@ -1,6 +1,8 @@
+#authors: Leonhard Jauch, Michael Kaltenbrunner, Tobias Pfeiffer
+#university of applied sciences Salzburg, ITS-B2017
+
 from PyQt5.QtWidgets import QWidget, QVBoxLayout
 from pyqtlet import MapWidget, L
-
 
 # src: https://pyqtlet.readthedocs.io/en/latest/getting-started.html
 # src: https://github.com/skylarkdrones/pyqtlet
